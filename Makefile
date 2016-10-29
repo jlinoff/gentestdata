@@ -1,7 +1,4 @@
-# These need to be set for your local environment.
-GOROOT    ?= /opt/go/1.7.3/go
-#ATOM_PATH ?= /opt/atom-1.11.2-amd64/atom
-ATOM_PATH ?= /opt/atom/Atom.app/Contents/MacOS/Atom
+# Assumes that go is in your path.
 
 # Compile.
 .PHONY: compile test
@@ -20,6 +17,7 @@ define Test
 	$(call Banner,$1 $2)
 	$1 $2
 endef
+
 test: bin/gentestdata
 	$(call Test,$<,-h)
 	$(call Test,$<,-V)
@@ -38,25 +36,3 @@ clean:
 bin/gentestdata: src/jlinoff/gentestdata/main.go src/jlinoff/gentestdata/options.go
 	GOPATH=$$(pwd) go install jlinoff/gentestdata
 
-# Pre-flight
-preflight: golint crypto-ssh
-
-# Run the editor.
-edit: golint crypto-ssh
-	GOPATH=$$(pwd) $(ATOM_PATH)
-
-# Install the basic infrastructure for the atom editor.
-.PHONY: golint crypto-ssh
-
-golint: $(GOROOT)/bin/golint
-
-crypto-ssh: src/golang.org/x/crypto/ssh
-
-$(GOROOT)/bin/golint: golint/bin/golint
-	sudo cp $< $@
-
-golint/bin/golint:
-	GOPATH=$$(pwd)/golint go get -u github.com/golang/lint/golint
-
-src/golang.org/x/crypto/ssh:
-	GOPATH=$$(pwd) go get golang.org/x/crypto/ssh
