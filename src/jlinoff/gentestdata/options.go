@@ -39,6 +39,7 @@ func getProgramName() string {
 }
 
 type options struct {
+	Deterministic    bool
 	LineWidth        int
 	NumLines         int
 	InterleaveStderr int
@@ -86,6 +87,8 @@ func getopts() (opts options) {
 		switch opt {
 		case "-a", "--alphabet":
 			opts.Alphabet = nextArg(&i, opt)
+		case "-d", "--deterministic":
+			opts.Deterministic = true
 		case "-h", "--help":
 			help()
 		case "-i", "--interleave":
@@ -112,10 +115,14 @@ USAGE
     %[1]v [OPTIONS]
 
 DESCRIPTION
-    Program that generates text data for testing purposes.
+    Program that generates text data to stdout and stderr for testing output
+    handling.
 
     You can control the alphabet used, the number of lines, the line width and
     whether to output some or all of the lines to stderr.
+
+    You can also control whether the output is randomly generated. Using
+    deterministic output is useful for building unit tests.
 
     It is very useful to testing stderr handling in client/server systems.
 
@@ -124,6 +131,10 @@ OPTIONS
                        Specify an alternative alphabet to use for generating
                        the data.
                        The default is: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".
+
+    -d, --deterministic
+                       Do not create random strings. Instead use the alphabet
+                       unchanged. This is useful for creating unit tests.
 
     -h, --help         This help message.
 
@@ -207,6 +218,21 @@ EXAMPLES
     # Example 6. show the output size
     $ %[1]v -n 32 -w 32 -a 0123456789abcdef | wc
         32      32    1024
+
+    # Example 7. generate deterministic output for unit tests
+    $ %[1]v -d -l -n 12 -w 32 -a 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
+         1 Lorem ipsum dolor sit ame
+         2 Lorem ipsum dolor sit ame
+         3 Lorem ipsum dolor sit ame
+         4 Lorem ipsum dolor sit ame
+         5 Lorem ipsum dolor sit ame
+         6 Lorem ipsum dolor sit ame
+         7 Lorem ipsum dolor sit ame
+         8 Lorem ipsum dolor sit ame
+         9 Lorem ipsum dolor sit ame
+        10 Lorem ipsum dolor sit ame
+        11 Lorem ipsum dolor sit ame
+        12 Lorem ipsum dolor sit ame
 
 VERSION
     v%[2]v

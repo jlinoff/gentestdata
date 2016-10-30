@@ -32,28 +32,53 @@ import (
 	"os"
 )
 
-var version = "0.2"
+var version = "0.3" // added -d support
 
 func main() {
 	opts := getopts()
-	m := ""
+	line := ""
+	dline := getDline(opts)
 	for i := 0; i < opts.NumLines; i++ {
-		if opts.ShowLineNumbers {
-			s := getRandomString(opts.LineWidth-8, opts.Alphabet)
-			m = fmt.Sprintf("%6d %s", i+1, s)
+
+		// Get the line data.
+		if opts.Deterministic {
+			line = dline
 		} else {
-			m = getRandomString(opts.LineWidth-1, opts.Alphabet) // leave room for newline
+			line = getRandomString(opts.LineWidth, opts.Alphabet)
 		}
+
+		// Insert line numbers if necessary.
+		if opts.ShowLineNumbers {
+			line = fmt.Sprintf("%6d %s", i+1, line)
+		}
+
+		// Trim the line.
+		line = line[:opts.LineWidth-1] // make room for the new line
+
+		// Output the line to stdout or stderr.
 		if opts.InterleaveStderr == 0 || (i%opts.InterleaveStderr) != (opts.InterleaveStderr-1) {
-			fmt.Fprintln(os.Stdout, m)
+			fmt.Fprintln(os.Stdout, line)
 		} else {
-			fmt.Fprintln(os.Stderr, m)
+			fmt.Fprintln(os.Stderr, line)
 		}
 	}
 }
 
-func getRandomString(width int, alphabet string) string {
-	b := make([]byte, width)
+// Get the deterministic line.
+func getDline(opts options) string {
+	// Make sure that the dline is large enough to slice.
+	dline := opts.Alphabet // deterministic line
+	if opts.Deterministic {
+		for len(dline) < opts.LineWidth {
+			dline += opts.Alphabet
+		}
+	}
+	return dline[:opts.LineWidth]
+}
+
+// Generate a random string of fix length from the alphabet.
+func getRandomString(length int, alphabet string) string {
+	b := make([]byte, length)
 	for i := range b {
 		b[i] = alphabet[rand.Intn(len(alphabet))]
 	}
