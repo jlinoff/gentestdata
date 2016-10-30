@@ -5,6 +5,7 @@ I use it to test whether code that spawns and manages subprocesses
 properly handles large amounts of output and whether it correctly interleaves
 stdout and stderr.
 
+## Generate random data
 The simple example below shows a case where it is generating 16 lines of output
 where each line has 32 characters, every 5th line is output to stderr, all others
 are output to stdout and line numbers are added. The options used are briefly
@@ -12,6 +13,7 @@ described below. More detail can be found from the help (-h).
 
 | Option | Function |
 | ------ | -------- |
+| -d     | Generate deterministic output for unit tests |
 | -i NUM | Stderr interleave factor, output to stderr every NUM lines. |
 | -l     | Prefix the line with a line count starting at 1. |
 | -n NUM | The number of lines. |
@@ -86,6 +88,39 @@ $ bin/gentestdata -w 1024 -n 1024 -l | head -4 | cut -c -50
      4 yyGlfngastMaGOuGh1k3RJTI7kAYvlujUbpH2eGctFb
 ```
 
+## Generate deterministic data for unit tests
+
+Random data is great but for unit tests deterministic data is needed.
+The example below shows how to use the -d option to generated deterministic
+data.
+
+```bash
+$ bin/gentestdata -n 16 -w 63 -i 5 -d -l -a 'Lorem ipsum dolor sit amet, consectetur adipiscing elit' 
+     1 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+     2 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+     3 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+     4 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+     5 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+     6 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+     7 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+     8 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+     9 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    10 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    11 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    12 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    13 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    14 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    15 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    16 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+```
+As in the previous examples, the stdout and stderr are interleaved.
+
+```bash
+$ bin/gentestdata -n 16 -w 63 -i 5 -d -l -a 'Lorem ipsum dolor sit amet, consectetur adipiscing elit' 1>/dev/null
+     5 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    10 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    15 Lorem ipsum dolor sit amet, consectetur adipiscing elit
+```
 
 ## Building it
 ```bash
@@ -104,16 +139,20 @@ Help is available from the program. Just use the -h or --help option.
 This is the output.
 
 ```bash
-$ gendata -h
+$ bin/gentestdata -h
 
 USAGE
     gentestdata [OPTIONS]
 
 DESCRIPTION
-    Program that generates text data for testing purposes.
+    Program that generates text data to stdout and stderr for testing output
+    handling.
 
     You can control the alphabet used, the number of lines, the line width and
     whether to output some or all of the lines to stderr.
+
+    You can also control whether the output is randomly generated. Using
+    deterministic output is useful for building unit tests.
 
     It is very useful to testing stderr handling in client/server systems.
 
@@ -122,6 +161,10 @@ OPTIONS
                        Specify an alternative alphabet to use for generating
                        the data.
                        The default is: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".
+
+    -d, --deterministic
+                       Do not create random strings. Instead use the alphabet
+                       unchanged. This is useful for creating unit tests.
 
     -h, --help         This help message.
 
@@ -206,7 +249,21 @@ EXAMPLES
     $ gentestdata -n 32 -w 32 -a 0123456789abcdef | wc
         32      32    1024
 
-VERSION
-    v0.2
-```
+    # Example 7. generate deterministic output for unit tests
+    $ gentestdata -d -l -n 12 -w 32 -a 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
+         1 Lorem ipsum dolor sit ame
+         2 Lorem ipsum dolor sit ame
+         3 Lorem ipsum dolor sit ame
+         4 Lorem ipsum dolor sit ame
+         5 Lorem ipsum dolor sit ame
+         6 Lorem ipsum dolor sit ame
+         7 Lorem ipsum dolor sit ame
+         8 Lorem ipsum dolor sit ame
+         9 Lorem ipsum dolor sit ame
+        10 Lorem ipsum dolor sit ame
+        11 Lorem ipsum dolor sit ame
+        12 Lorem ipsum dolor sit ame
 
+VERSION
+    v0.3
+```
