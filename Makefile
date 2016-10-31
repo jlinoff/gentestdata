@@ -29,6 +29,7 @@ test: bin/gentestdata
 	$(call Test,$<,-w 32 -n 16 -l -i 5 2>/dev/null)
 	$(call Test,$<,-w 32 -n 16 -d -l -i 5 -a Lorem_ipsum_dolor_sit_amet)
 	$(call Test,$<,-w 32 -n 16 -d -l -i 5 -a Lorem_ipsum_dolor_sit_amet 1>/dev/null)
+	$(call Test,$<,-w 73 -n 10 -l)
 	$(call Banner,done - passed)
 
 clean:

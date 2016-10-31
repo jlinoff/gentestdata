@@ -32,7 +32,8 @@ import (
 	"os"
 )
 
-var version = "0.3" // added -d support
+// var version = "0.3" // added -d support
+var version = "0.4" // fixed bug for line width greater than 62
 
 func main() {
 	opts := getopts()
@@ -72,8 +73,9 @@ func getDline(opts options) string {
 		for len(dline) < opts.LineWidth {
 			dline += opts.Alphabet
 		}
+		return dline[:opts.LineWidth]
 	}
-	return dline[:opts.LineWidth]
+	return ""
 }
 
 // Generate a random string of fix length from the alphabet.
