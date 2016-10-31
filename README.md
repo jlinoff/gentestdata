@@ -265,5 +265,5 @@ EXAMPLES
         12 Lorem ipsum dolor sit ame
 
 VERSION
-    v0.3
+    v0.4
 ```
