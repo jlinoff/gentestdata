@@ -91,7 +91,7 @@ $ bin/gentestdata -w 1024 -n 1024 -l | head -4 | cut -c -50
 ## Generate deterministic data for unit tests
 
 Random data is great but for unit tests deterministic data is needed.
-The example below shows how to use the -d option to generated deterministic
+The example below shows how to use the -d option to generate deterministic
 data.
 
 ```bash
